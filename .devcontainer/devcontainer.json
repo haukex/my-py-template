@@ -14,6 +14,7 @@
         },
         "ghcr.io/devcontainers/features/docker-in-docker:2": {},
         "ghcr.io/lukewiwa/features/shellcheck:0": {},
+        "ghcr.io/devcontainers/features/node:1": {},
         "ghcr.io/guiyomh/features/vim:0": {}
     },
     "postCreateCommand": ".devcontainer/initialize.sh"
