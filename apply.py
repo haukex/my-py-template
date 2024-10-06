@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """Script to apply this template repository to a directory.
 
 Author, Copyright, and License
