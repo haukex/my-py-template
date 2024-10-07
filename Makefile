@@ -93,11 +93,10 @@ coverage:  ## Run unit tests with coverage
 	$(PYTHON3BIN) -m coverage report --rcfile=pyproject.toml
 	# $(PYTHON3BIN) -m coverage html --rcfile=pyproject.toml
 	$(PYTHON3BIN) -m coverage xml --rcfile=pyproject.toml
-	perl -wM5.014 -MJSON::PP=decode_json -MTerm::ANSIColor=colored <<'EOF'
-	my $$p = decode_json(`$(PYTHON3BIN) -m coverage json --rcfile=pyproject.toml -o-`)->{totals}{percent_covered};
-	print "=> ",colored([$$p==100?"green":"red"],"$$p% Coverage")," <=\n";
-	exit($$p==100?0:1);
-	EOF
+	$(PYTHON3BIN) -m coverage json --rcfile=pyproject.toml -o- \
+		| perl -wM5.014 -MJSON::PP=decode_json -MTerm::ANSIColor=colored -0777 -ne \
+		'my $$p=decode_json($$_)->{totals}{percent_covered}; print "=> ",
+		colored([$$p==100?"green":"red"],"$$p% Coverage")," <=\n"; exit($$p==100?0:1)'
 
 # https://stackoverflow.com/q/8889035
 help:   ## Show this help
