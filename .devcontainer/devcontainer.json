@@ -1,7 +1,7 @@
 // https://aka.ms/devcontainer.json
 {
     //"image": "mcr.microsoft.com/devcontainers/python:3.12-bookworm",
-    // Actually, we want to develop on the lowest version of Python this library supports,
+    // Actually, we want to develop on the lowest version of Python this project supports,
     // since backwards compatibility issues pop up more often than forward compatibility.
     "image": "mcr.microsoft.com/devcontainers/python:3.9-bookworm",
     "features": {
