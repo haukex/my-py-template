@@ -1,4 +1,6 @@
 
+# ##### ##### ##### ##### ##### Hauke's Python Type Checker / Linter Settings ##### ##### ##### ##### #####
+
 # Individual lines can be ignored with:
 # pylance: ``# pyright: ignore [settingName]``
 # pylint:  ``# pylint: disable=setting-name``

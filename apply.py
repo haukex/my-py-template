@@ -90,6 +90,7 @@ def do_diff(fromfile :Filename, tofile :Filename, *, ignore_ws :bool=False, try_
         from_lines = list( collapsews(fh) if ignore_ws else (line.removesuffix('\n') for line in fh) )
     with open(tofile, encoding='UTF-8') as fh:
         to_lines = list( collapsews(fh) if ignore_ws else (line.removesuffix('\n') for line in fh) )
+    #TODO Later: Could sync with https://github.com/haukex/dotfiles/blob/main/apply.py
     for line in unified_diff(from_lines, to_lines, fromfile=str(fromfile), tofile=str(tofile), lineterm=''):
         if line[0:3] in ('+++','---'):
             style = Style.BRIGHT
