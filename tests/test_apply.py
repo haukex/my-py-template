@@ -145,7 +145,6 @@ class ApplyScriptTestCase(unittest.TestCase):
                 td/'.vscode'/'extensions.json',
                 td/'.vscode'/'settings.json',
                 td/'dev'/'requirements.txt',
-                td/'dev'/'pre-commit.yml',
                 td/'.gitignore',
                 td/'Makefile',
                 td/'pyproject.toml',

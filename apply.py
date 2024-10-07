@@ -52,7 +52,6 @@ FILES: tuple[FileEntry, ...] = (
     FileEntry(Path('.vscode','extensions.json'), None),
     FileEntry(Path('.vscode','settings.json'), None),
     FileEntry(Path('dev','requirements.txt'), ('requirements-dev.txt',)),
-    FileEntry(Path('dev','pre-commit.yml'), ('.pre-commit-config.yaml',)),
     FileEntry(Path('.gitignore'), None),
     FileEntry(Path('Makefile'), None),
     FileEntry(Path('pyproject.toml'), None),
