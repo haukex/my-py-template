@@ -12,10 +12,12 @@
             "username": "none",
             "nonFreePackages": true
         },
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+        // "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+        // "ghcr.io/haukex/devcontainer-features/perl:1": {},
         "ghcr.io/lukewiwa/features/shellcheck:0": {},
         "ghcr.io/devcontainers/features/node:1": {},
         "ghcr.io/guiyomh/features/vim:0": {}
     },
     "postCreateCommand": ".devcontainer/initialize.sh"
 }
+/* vim: set filetype=javascript ts=4 sw=4 expandtab : */

@@ -155,6 +155,8 @@ class ApplyScriptTestCase(unittest.TestCase):
                 td/'.github'/'workflows'/'tests.yml',
                 td/'dev'/'local-actions.sh',
                 td/'dev'/'isolated-dist-test.sh',
+                td/'.devcontainer'/'devcontainer.json',
+                td/'.devcontainer'/'initialize.sh',
             )
             exp_files = exp_main+exp_optnl
             exp_special = (

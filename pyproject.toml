@@ -2,10 +2,11 @@
 # ##### ##### ##### ##### ##### Hauke's Python Type Checker / Linter Settings ##### ##### ##### ##### #####
 
 # Individual lines can be ignored with:
-# pylance: ``# pyright: ignore [settingName]``
-# pylint:  ``# pylint: disable=setting-name``
-# flake8:  ``# noqa: CODE``
-# mypy:    ``# type: ignore[setting-name]``
+# pylance:  ``# pyright: ignore [settingName]``
+# pylint:   ``# pylint: disable=setting-name``
+# flake8:   ``# noqa: CODE``
+# mypy:     ``# type: ignore[setting-name]``
+# coverage: ``# pragma: no cover``, ``# pragma: no branch``, and https://pypi.org/project/coverage-simple-excludes/
 
 # ##### ##### ##### ##### ##### https://github.com/microsoft/pyright/blob/main/docs/configuration.md ##### ##### ##### ##### #####
 
@@ -28,6 +29,7 @@ reportPropertyTypeMismatch = "warning"
 # ##### ##### ##### ##### ##### https://coverage.readthedocs.io/en/latest/config.html ##### ##### ##### ##### #####
 
 [tool.coverage.run]
+plugins = ["coverage_simple_excludes"]
 command_line = "-m unittest -v"
 branch = true
 omit = [

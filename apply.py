@@ -60,6 +60,8 @@ FILES: tuple[FileEntry, ...] = (
     FileEntry(Path('.github','workflows','tests.yml'), None, optional=True),
     FileEntry(Path('dev','local-actions.sh'), None, optional=True),
     FileEntry(Path('dev','isolated-dist-test.sh'), None, optional=True),
+    FileEntry(Path('.devcontainer','devcontainer.json'), None, optional=True),
+    FileEntry(Path('.devcontainer','initialize.sh'), None, optional=True),
 )
 
 def do_diff(fromfile :Filename, tofile :Filename, *, ignore_ws :bool=False, try_git :bool=True):
