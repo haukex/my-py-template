@@ -288,7 +288,7 @@ class ApplyScriptTestCase(unittest.TestCase):
             # error case: file is a directory
             (td/'pyproject.toml').unlink()
             (td/'pyproject.toml').mkdir()
-            with self.assertRaises(OSError):
+            with self.assertRaises(OSError):  # pragma: no branch
                 apply.main()
 
         self.assertEqual( mock_exit.call_args_list,     [call(0)]*9   )
