@@ -64,7 +64,7 @@ nix-checks:  ## Checks that depend on a *NIX OS/FS
 shellcheck:  ## Run shellcheck
 	@set -euxo pipefail
 	# https://www.gnu.org/software/findutils/manual/html_mono/find.html
-	find . \( -type d -name '.venv*' -prune \) -o \( -iname '*.sh' -exec shellcheck '{}' + \)
+	find . \( -type d \( -name '.venv*' -o -name '.devpod-internal' \) -prune \) -o \( -iname '*.sh' -exec shellcheck '{}' + \)
 
 ver-checks:  ## Checks that depend on the Python version
 	@set -euxo pipefail
