@@ -41,6 +41,7 @@ class FileEntry(NamedTuple):
     #: if None, don't search for alternatives; if empty, search recursively for file of the same name
     alt_names :Union[None, tuple[str, ...]]
     optional :bool = False
+    #TODO Later: exec bit, in case this repo is on an FS with unreliable perms, applying to an FS that has reliable perms
 
 class FileActionItem(NamedTuple):
     name :Path
