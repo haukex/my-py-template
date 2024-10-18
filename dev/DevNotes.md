@@ -11,7 +11,7 @@ This document is currently referenced by:
 Development Environment
 -----------------------
 
-- [ ] Development on Linux
+- [ ] Development on Linux (preferred; some projects can be developed on Windows or macOS too)
 - [ ] In order to run full tests locally, install multiple Python versions with `python3.X`
   aliases, e.g as per <https://github.com/haukex/toolshed/blob/main/notes/Python.md>,
   and use the lowest supported version for normal development to catch any backcompat issues.
