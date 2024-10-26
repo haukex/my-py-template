@@ -89,13 +89,13 @@ other-checks:  ## Checks not depending on the Python version
 	for REQ in $(requirement_txts); do $(PYTHON3BIN) -m pur --skip-gt --dry-run-changed --nonzero-exit-code -r "$$REQ"; done
 
 unittest:  ## Run unit tests
-	@PYTHONDEVMODE=1 PYTHONWARNINGS=error PYTHONWARNDEFAULTENCODING=1 $(PYTHON3BIN) -m unittest -v
+	$(PYTHON3BIN) -X dev -X warn_default_encoding -W error -m unittest -v
 
 coverage:  ## Run unit tests with coverage
 	@set -euxo pipefail
 	# Note: Don't add command-line arguments here, put them in the rcfile
 	# We also don't use --fail_under=100 because then the report won't be written.
-	PYTHONDEVMODE=1 PYTHONWARNINGS=error PYTHONWARNDEFAULTENCODING=1 $(PYTHON3BIN) -m coverage run --rcfile=pyproject.toml
+	$(PYTHON3BIN) -X dev -X warn_default_encoding -W error -m coverage run --rcfile=pyproject.toml
 	$(PYTHON3BIN) -m coverage report --rcfile=pyproject.toml
 	# $(PYTHON3BIN) -m coverage html --rcfile=pyproject.toml
 	$(PYTHON3BIN) -m coverage xml --rcfile=pyproject.toml
