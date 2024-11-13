@@ -9,12 +9,11 @@ for individual projects, while I think the Python linting/styling settings in
 `pyproject.toml` should be kept synchronized across my projects.
 
 Some additional stuff elsewhere:
-- Development notes for releasing to PyPI:
-  [simple-perms](https://github.com/haukex/simple-perms/blob/main/dev/DevNotes.md) and
-  [igbpyutils](https://github.com/haukex/igbpyutils/blob/main/dev/Notes.md) (older)
 - `README.md` generation by Sphinx:
   [simple-perms](https://github.com/haukex/simple-perms) and
   [unzipwalk](https://github.com/haukex/unzipwalk)'s `Makefile`s and `docs` folders
+- Sphinx documentation generation to GitHub Pages:
+  [pytoa5](https://github.com/haukex/pytoa5)
 - *Read the Docs* and Sphinx documentation generation:
   [igbpyutils](https://github.com/haukex/igbpyutils/)
 
