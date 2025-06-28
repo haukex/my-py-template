@@ -1,11 +1,11 @@
 # requirements *for development*!
 igbpyutils == 0.8.0
 simple-perms == 1.0.0 ; sys_platform != 'win32'
-coverage[toml] == 7.8.2
+coverage[toml] == 7.9.1
 coverage-simple-excludes == 1.0.0
 pylint == 3.3.7
-mypy == 1.15.0
-flake8 == 7.2.0
+mypy == 1.16.1
+flake8 == 7.3.0
 Flake8-pyproject == 1.2.3
 pur == 7.3.3
 build == 1.2.2.post1 ; sys_platform == 'linux'
