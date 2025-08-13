@@ -15,7 +15,7 @@ jobs:
       matrix:
         os: [Ubuntu, Windows, macOS]
         # Remember that some tests below only run on one version, so keep that up-to-date.
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
     runs-on: ${{ matrix.os }}-latest
     steps:
       - name: Disable autocrlf on Windows
