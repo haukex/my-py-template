@@ -1,3 +1,52 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "my-py-templ"
+description = "Hauke's Python Template"
+version = "1.0.0"
+authors = [ { name="Hauke D", email="haukex@zero-g.net" } ]
+readme = "README.md"
+requires-python = ">=3.9"
+dynamic = ["dependencies"]
+# https://pypi.org/classifiers/
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Development Status :: 5 - Production/Stable",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS :: MacOS X",
+    "Topic :: Software Development :: Libraries",
+]
+
+[tool.setuptools]
+# packages = ["package_name", "other.package"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[project.optional-dependencies]
+# "tag" = ["package>=1.2.3"]
+
+[project.scripts]
+# script-name = "package.name:function"
+
+[project.urls]
+# "Homepage" = "https://haukex.github.io/my-py-template"
+# "Documentation" = "https://haukex.github.io/my-py-template"
+"Repository" = "https://github.com/haukex/my-py-template"
+"Bug Tracker" = "https://github.com/haukex/my-py-template/issues"
+# "Changelog" = "https://github.com/haukex/my-py-template/blob/main/CHANGELOG.md"
+
 
 # ##### ##### ##### ##### ##### Hauke's Python Type Checker / Linter Settings ##### ##### ##### ##### #####
 
