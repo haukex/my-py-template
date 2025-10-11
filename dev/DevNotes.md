@@ -7,6 +7,7 @@ This document is currently referenced by:
 - <https://github.com/haukex/coverage-simple-excludes/blob/main/dev/DevNotes.md>
 - <https://github.com/haukex/igbpyutils/blob/main/dev/DevNotes.md>
 - <https://github.com/haukex/pytoa5/blob/main/dev/DevNotes.md>
+- <https://github.com/haukex/merge-insertion.py/blob/main/dev/DevNotes.md>
 
 Development Environment
 -----------------------
