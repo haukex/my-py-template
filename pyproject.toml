@@ -7,6 +7,8 @@ name = "my-py-templ"
 description = "Hauke's Python Template"
 version = "1.0.0"
 authors = [ { name="Hauke D", email="haukex@zero-g.net" } ]
+# https://spdx.org/licenses/
+license = "GPL-3.0-or-later"
 readme = "README.md"
 requires-python = ">=3.10"
 dynamic = ["dependencies"]
@@ -18,7 +20,6 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
-    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Development Status :: 5 - Production/Stable",
     "Operating System :: POSIX",
     "Operating System :: Unix",
