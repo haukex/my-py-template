@@ -71,7 +71,6 @@ reportMissingParameterType = "none"
 reportMissingTypeArgument = "none"
 reportGeneralTypeIssues = "none"  # too bad there isn't more fine-grained control than this
 reportUnnecessaryTypeIgnoreComment = "none"  # this flags too many comments; we use mypy's `warn_unused_ignores` instead
-reportShadowedImports = "warning"
 reportImportCycles = "error"
 reportPropertyTypeMismatch = "warning"
 
@@ -166,10 +165,6 @@ ignored-modules = ["ldap"]
 # number of processors available to use, and will cap the count on Windows to
 # avoid hangs.
 jobs = 0
-
-# When enabled, pylint would attempt to guess common misconfiguration and emit
-# user-friendly hints instead of false-positive error messages.
-suggestion-mode = true
 
 [tool.pylint.basic]
 
