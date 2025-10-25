@@ -16,8 +16,8 @@ Development Environment
 - [ ] In order to run full tests locally, install multiple Python versions with `python3.X`
   aliases, e.g as per <https://github.com/haukex/toolshed/blob/main/notes/Python.md>,
   and use the lowest supported version for normal development to catch any backcompat issues.
-- [ ] `python3.9 -m venv .venv3.9` and `. .venv3.9/bin/activate`
-  - [ ] In some cases (DevPod), placing the venv at e.g. `~/.venvs/project-name/.venv3.9` is better
+- [ ] `python3.10 -m venv .venv3.10` and `. .venv3.10/bin/activate`
+  - [ ] In some cases (DevPod), placing the venv at e.g. `~/.venvs/project-name/.venv3.10` is better
 - [ ] `make installdeps` - set up dev env
 - [ ] Installing Pyright (if you don't have Node already):
   - [ ] Install Node as per <https://github.com/haukex/toolshed/blob/main/notes/JavaScript.md>
