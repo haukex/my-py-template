@@ -27,7 +27,10 @@ Testing
 -------
 
 - [ ] `make` - tests incl. lint & coverage
+  - [ ] `make coverage` - no linting
+  - [ ] `make unittest` - no linting or coverage
 - [ ] `dev/local-actions.sh .` - tests on all Python versions
+- [ ] `make outdated` - check for newer dependency versions
 
 Release Preparation
 -------------------

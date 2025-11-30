@@ -11,9 +11,9 @@ perm_checks = ./* .gitignore .vscode .github
 # The user can change the following on the command line:
 PYTHON3BIN = python
 
-.PHONY: help tasklist installdeps test build-check
-.PHONY: smoke-checks nix-checks shellcheck ver-checks other-checks coverage unittest
-test:   smoke-checks nix-checks shellcheck ver-checks other-checks coverage  ## Run all tests
+.PHONY: help tasklist installdeps test build-check outdated
+.PHONY: smoke-checks nix-checks shellcheck ver-checks coverage unittest
+test:   smoke-checks nix-checks shellcheck ver-checks coverage  ## Run all tests
 # Reminder: If the `test` target changes, make the appropriate changes to .github/workflows/tests.yml
 
 # spell-checker: ignore txts tasklist installdeps shellcheck FSTYPE MJSON OSTYPE devpod euxo pythonpath rcfile sdist
@@ -87,10 +87,10 @@ ver-checks:  ## Checks that depend on the Python version
 	$(PYTHON3BIN) -m flake8 --toml-config=pyproject.toml $(py_code_locs)
 	$(PYTHON3BIN) -m pylint --rcfile=pyproject.toml --recursive=y $(py_code_locs)
 
-other-checks:  ## Checks not depending on the Python version
-	@set -euxo pipefail
+outdated:  ## Check the dependency versions
+	@set -euo pipefail
 	# note the following is on one line b/c GitHub macOS Action Runners are running bash 3.2 and the multiline version didn't work there...
-	for REQ in $(requirement_txts); do $(PYTHON3BIN) -m pur --skip-gt --dry-run-changed --nonzero-exit-code -r "$$REQ"; done
+	for REQ in $(requirement_txts); do $(PYTHON3BIN) -m pur --dry-run-changed -r "$$REQ"; done
 
 unittest:  ## Run unit tests
 	$(PYTHON3BIN) -X dev -X warn_default_encoding -W error -m unittest -v
