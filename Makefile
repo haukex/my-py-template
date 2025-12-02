@@ -33,11 +33,18 @@ build-check: smoke-checks
 	echo "$${dist_files[@]}"
 
 tasklist:	## List open tasks.
-	@grep --color=auto \
+	@set -uo pipefail
+	command grep --color=auto \
 		--exclude-dir=.git --exclude-dir=__pycache__ --exclude-dir=.ipynb_checkpoints --exclude-dir='.venv*' \
 		--exclude-dir='.*cache' --exclude-dir=node_modules --exclude='LICENSE*' --exclude='.*.swp' \
 		-Eri '\bto.?do\b'
-	true  # ignore nonzero exit code from grep
+	set -e
+	for gh_proj in $$( git remote -v | perl -wM5.014 -ne 'say $$1 while m{(?:\s|^)https?://(?:www\.)?github\.com/([^/\s]+/[^/\s]+)\.git(?:\s|$$)}ig' | sort -u ); do
+		gh_count="$$(curl -sL https://api.github.com/repos/"$$gh_proj" | jq .open_issues_count)"
+		if [ -n "$$gh_count" ] && [ "$$gh_count" != "0" ]; then
+			echo "There are $$gh_count open issues on GitHub $$gh_proj"
+		fi
+	done
 
 installdeps:  ## Install project dependencies
 	@set -euxo pipefail
