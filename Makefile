@@ -41,7 +41,7 @@ tasklist:	## List open tasks.
 	set -e
 	for gh_proj in $$( git remote -v | perl -wM5.014 -ne 'say $$1 while m{(?:\s|^)https?://(?:www\.)?github\.com/([^/\s]+/[^/\s]+)\.git(?:\s|$$)}ig' | sort -u ); do
 		gh_count="$$(curl -sL https://api.github.com/repos/"$$gh_proj" | jq .open_issues_count)"
-		if [ -n "$$gh_count" ] && [ "$$gh_count" != "0" ]; then
+		if [ -n "$$gh_count" ] && [ "$$gh_count" != "0" ] && [ "$$gh_count" != "null" ]; then
 			echo "There are $$gh_count open issues on GitHub $$gh_proj"
 		fi
 	done
