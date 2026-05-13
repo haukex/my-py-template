@@ -62,4 +62,4 @@ Releasing
 - [ ] `git clean -dxf dist *.egg-info`
 - [ ] Add placeholder for next version to Changelog
 
-<!-- spell-checker: ignore backcompat installdeps pyproject tasklist tzvf venv venvs -->
+<!-- spell-checker: ignore backcompat installdeps pyproject tasklist tzvf venvs -->
