@@ -2,9 +2,9 @@
 # This file is based on https://github.com/haukex/my-py-template/blob/main/dev/requirements.txt
 igbpyutils == 1.0.0
 simple-perms == 1.0.0 ; sys_platform != 'win32'
-coverage[toml] == 7.14.0
+coverage[toml] == 7.14.1
 coverage-simple-excludes == 1.1.1
-pylint == 4.0.5
+pylint == 4.0.6
 mypy == 2.1.0
 flake8 == 7.3.0
 Flake8-pyproject == 1.2.4
