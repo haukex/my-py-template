@@ -36,6 +36,8 @@ from more_itertools import unique_everseen
 from igbpyutils.error import init_handlers
 from igbpyutils.file import Filename
 
+# spell: ignore igbpyutils everseen tofile lineterm
+
 class FileEntry(NamedTuple):
     path :Path
     #: if None, don't search for alternatives; if empty, search recursively for file of the same name
@@ -63,13 +65,14 @@ FILES: tuple[FileEntry, ...] = (
     FileEntry(Path('dev','isolated-dist-test.sh'), None, optional=True),
     FileEntry(Path('.devcontainer','devcontainer.json'), None, optional=True),
     FileEntry(Path('.devcontainer','initialize.sh'), None, optional=True),
+    FileEntry(Path('AGENTS.md'), None, optional=True),
 )
 
-def do_diff(fromfile :Filename, tofile :Filename, *, ignore_ws :bool=False, try_git :bool=True):
+def do_diff(fromfile :Filename, to_file :Filename, *, ignore_ws :bool=False, try_git :bool=True):
     if try_git:
         cmd = ['git','--no-pager','diff','--no-index','--color-words'] \
                + ( ['--ignore-all-space'] if ignore_ws else [] ) \
-               + ['--',str(fromfile),str(tofile)]
+               + ['--',str(fromfile),str(to_file)]
         try:
             rv = subprocess.run(cmd, check=False)
             if rv.returncode not in (0,1):
@@ -78,7 +81,7 @@ def do_diff(fromfile :Filename, tofile :Filename, *, ignore_ws :bool=False, try_
             pass  # fall back to our diff
         else:
             return
-    def collapsews(inp :Iterable[str]) -> Generator[str, None, None]:
+    def collapse_ws(inp :Iterable[str]) -> Generator[str, None, None]:
         was_blank = False
         for line in inp:
             is_blank = not line or line.isspace()
@@ -89,11 +92,11 @@ def do_diff(fromfile :Filename, tofile :Filename, *, ignore_ws :bool=False, try_
                 yield re.sub(r'\s+',' ',line.strip())
             was_blank = is_blank
     with open(fromfile, encoding='UTF-8') as fh:
-        from_lines = list( collapsews(fh) if ignore_ws else (line.removesuffix('\n') for line in fh) )
-    with open(tofile, encoding='UTF-8') as fh:
-        to_lines = list( collapsews(fh) if ignore_ws else (line.removesuffix('\n') for line in fh) )
+        from_lines = list( collapse_ws(fh) if ignore_ws else (line.removesuffix('\n') for line in fh) )
+    with open(to_file, encoding='UTF-8') as fh:
+        to_lines = list( collapse_ws(fh) if ignore_ws else (line.removesuffix('\n') for line in fh) )
     #TODO Later: Could sync with https://github.com/haukex/dotfiles/blob/main/apply.py
-    for line in unified_diff(from_lines, to_lines, fromfile=str(fromfile), tofile=str(tofile), lineterm=''):
+    for line in unified_diff(from_lines, to_lines, fromfile=str(fromfile), tofile=str(to_file), lineterm=''):
         if line[0:3] in ('+++','---'):
             style = Style.BRIGHT
         elif line.startswith('@@'):
@@ -125,45 +128,45 @@ def main():
     parser = argparse.ArgumentParser(description='Python Template Applicator')
     parser.add_argument('-w', '--ignore-all-space', help="ignore all whitespace in diff", action="store_true")
     parser.add_argument('-G', '--no-git-diff', help="don't use git diff, use builtin", action="store_true")
-    parser.add_argument('-i', '--interactive', help="interactively propmt to make changes", action="store_true")
+    parser.add_argument('-i', '--interactive', help="interactively prompt to make changes", action="store_true")
     parser.add_argument('-n', '--dry-run', help="don't actually copy files", action="store_true")
-    parser.add_argument('-o', '--optional', help="Treat optional files as required (on when targetdir is empty)", action="store_true")
-    parser.add_argument('targetdir', help="the target directory")
+    parser.add_argument('-o', '--optional', help="Treat optional files as required (on when target_dir is empty)", action="store_true")
+    parser.add_argument('target_dir', help="the target directory")
     args = parser.parse_args()
 
     # first, locate all the files
-    srcpath = Path(__file__).parent
-    dstpath = Path(args.targetdir).resolve(strict=True)
-    if not dstpath.is_dir():
-        raise NotADirectoryError(args.targetdir)
-    dst_children = list(dstpath.iterdir())
+    src_path = Path(__file__).parent
+    dst_path = Path(args.target_dir).resolve(strict=True)
+    if not dst_path.is_dir():
+        raise NotADirectoryError(args.target_dir)
+    dst_children = list(dst_path.iterdir())
     dst_was_empty = not dst_children or len(dst_children)==1 and dst_children[0].is_dir() and dst_children[0].name == '.git'
     if dst_was_empty:
         args.optional=True
-    flist :list[FileActionItem] = []
-    for fent in FILES:
-        srcf = srcpath/fent.path
-        assert srcf.is_file()
-        dstf = dstpath/fent.path
+    f_list :list[FileActionItem] = []
+    for f_ent in FILES:
+        src_f = src_path/f_ent.path
+        assert src_f.is_file()
+        dst_f = dst_path/f_ent.path
         # locate the file
-        if not dstf.exists() and fent.alt_names is not None:
-            alts = tuple(unique_everseen(chain.from_iterable( dstpath.rglob(name) for name in (fent.path.name,)+fent.alt_names )))
+        if not dst_f.exists() and f_ent.alt_names is not None:
+            alts = tuple(unique_everseen(chain.from_iterable( dst_path.rglob(name) for name in (f_ent.path.name,)+f_ent.alt_names )))
             if len(alts)>1:
-                raise RuntimeError(f"Found more than one alternative for {fent.path}: {alts}")
+                raise RuntimeError(f"Found more than one alternative for {f_ent.path}: {alts}")
             if alts:
-                dstf = alts[0]
-        if dstf.exists() and not dstf.is_file():
-            raise OSError(f"Not a file: {srcf}")
-        flist.append( FileActionItem(name=fent.path, source=srcf, dest=dstf, optional=fent.optional) )
+                dst_f = alts[0]
+        if dst_f.exists() and not dst_f.is_file():
+            raise OSError(f"Not a file: {src_f}")
+        f_list.append( FileActionItem(name=f_ent.path, source=src_f, dest=dst_f, optional=f_ent.optional) )
 
     # then process the files
-    for fact in flist:
-        optnl = ' (optional)' if fact.optional else ''
+    for fact in f_list:
+        opt = ' (optional)' if fact.optional else ''
         if fact.dest.exists():
             if filecmp.cmp(fact.source, fact.dest, shallow=False):
-                print_msg(Fore.GREEN, f"Identical{optnl}: {fact.name}")
+                print_msg(Fore.GREEN, f"Identical{opt}: {fact.name}")
             else:
-                print_msg(Fore.MAGENTA, f"Different{optnl}: {fact.name}")
+                print_msg(Fore.MAGENTA, f"Different{opt}: {fact.name}")
                 do_diff(fact.source, fact.dest, ignore_ws=args.ignore_all_space, try_git=not args.no_git_diff)
                 if args.interactive and prompt_yn("Overwrite?"):
                     do_copy(fact, dry_run=args.dry_run)
@@ -176,14 +179,14 @@ def main():
                 print_msg(Fore.CYAN, f"Not copying optional {fact.name}")
         else:
             if args.interactive:
-                print_msg(Fore.RED, f"Missing{optnl} {fact.name}")
+                print_msg(Fore.RED, f"Missing{opt} {fact.name}")
                 if prompt_yn("Copy?"):
                     do_copy(fact, dry_run=args.dry_run)
             else:
                 do_copy(fact, dry_run=args.dry_run)
 
     # when initializing an empty directory, create an empty requirements.txt
-    req_txt = dstpath/'requirements.txt'
+    req_txt = dst_path/'requirements.txt'
     if dst_was_empty and not req_txt.exists():
         do_it = False
         if args.interactive:

@@ -29,6 +29,8 @@ from itertools import tee, chain
 from typing import Optional
 from tempfile import TemporaryDirectory
 
+# spell: ignore shellcheck requirement_txts oneshell
+
 def pairwise(iterable):
     """:func:`itertools.pairwise` was added in 3.10, this is a shim"""
     a, b = tee(iterable)
@@ -38,10 +40,10 @@ def pairwise(iterable):
 def dollar_replace(inp :str, trans :dict[str, str]):
     """Replace ``$$`` and ``$(...)`` sequences as they would appear in Makefile recipes"""
     replacements :list[tuple[int, int, str]] = []
-    wasdollar = False
+    was_dollar = False
     stack :list[tuple] = []
     for i, c in enumerate(inp):
-        if wasdollar:
+        if was_dollar:
             if c=='$':
                 if not any(stack):  # if not inside $()
                     replacements.append( (i-1,i,'') )
@@ -50,10 +52,10 @@ def dollar_replace(inp :str, trans :dict[str, str]):
                 stack.append( (i-1,) )
             else:
                 raise ValueError(f"Unknown sequence ${c}")
-            wasdollar = False
+            was_dollar = False
         else:
             if c=='$':
-                wasdollar = True
+                was_dollar = True
             elif c=='(':
                 stack.append( () )
             elif c==')':
@@ -97,8 +99,8 @@ class MakefileTestCase(unittest.TestCase):
         """Run ``shellcheck`` on the individual Makefile recipes"""
         makefile = Path(__file__).parent.parent/'Makefile'
         with ( makefile.open(encoding='UTF-8') as ifh,
-               TemporaryDirectory() as tdir ):
-            td = Path(tdir)
+               TemporaryDirectory() as t_dir ):
+            td = Path(t_dir)
             cur_target :Optional[str] = None
             recipe :list[str] = []
             files :list[Path] = []

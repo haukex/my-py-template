@@ -34,6 +34,8 @@ from igbpyutils.file import NamedTempFileDeleteLater
 from colorama import Fore, Back, Style
 import apply
 
+# spell: ignore igbpyutils
+
 def fake_msg(color :str, msg :str):
     return f"{Style.BRIGHT}{color}##### {msg} #####{Style.RESET_ALL}\n"
 
@@ -132,14 +134,14 @@ class ApplyScriptTestCase(unittest.TestCase):
 
     def test_apply(self):  # pylint: disable=too-many-statements,too-many-locals
         sd = Path(__file__).parent.parent
-        with (TemporaryDirectory() as tdir,
+        with (TemporaryDirectory() as t_dir,
               patch('apply.init_handlers') as mock_ih,
-              patch('apply.print_msg') as mock_printmsg,
+              patch('apply.print_msg') as mock_print_msg,
               patch('apply.do_diff') as mock_diff,
               patch('apply.prompt_yn', return_value=True) as mock_yn,
               patch('apply.just_fix_windows_console') as mock_fix,
               patch('argparse.ArgumentParser.exit') as mock_exit ):
-            td = Path(tdir).resolve(strict=True)
+            td = Path(t_dir).resolve(strict=True)
 
             exp_main = (
                 td/'.vscode'/'extensions.json',
@@ -149,7 +151,7 @@ class ApplyScriptTestCase(unittest.TestCase):
                 td/'Makefile',
                 td/'pyproject.toml',
             )
-            exp_optnl = (
+            exp_opt = (
                 td/'tests'/'__init__.py',
                 td/'tests'/'test_dummy.py',
                 td/'.github'/'workflows'/'tests.yml',
@@ -157,13 +159,14 @@ class ApplyScriptTestCase(unittest.TestCase):
                 td/'dev'/'isolated-dist-test.sh',
                 td/'.devcontainer'/'devcontainer.json',
                 td/'.devcontainer'/'initialize.sh',
+                td/'AGENTS.md',
             )
-            exp_files = exp_main+exp_optnl
+            exp_files = exp_main+exp_opt
             exp_special = (
                 td/'requirements.txt',
             )
 
-            def cmpthem():
+            def cmp_them():
                 self.assertEqual( sorted( p for p in td.rglob('*') if not p.is_dir() ), sorted(exp_files+exp_special) )
                 for p in exp_files:
                     src = sd/p.relative_to(td)
@@ -172,11 +175,11 @@ class ApplyScriptTestCase(unittest.TestCase):
                     self.assertEqual( p.lstat().st_size, 0 )
 
             exp_prompt_yn :list[_Call] = []
-            exp_printmsg :list[_Call] = []
+            exp_print_msg :list[_Call] = []
             exp_diff :list[_Call] = []
 
             # try a dry-run on empty dir
-            exp_printmsg += [
+            exp_print_msg += [
                 call(Fore.YELLOW, f"[DRY RUN] Copying {ef.relative_to(td)} to {ef}") for ef in exp_files ] + [
                 call(Fore.YELLOW, "[DRY RUN] Creating empty requirements.txt") ]
             sys.argv = ['apply.py', '--dry-run', str(td)]
@@ -185,20 +188,20 @@ class ApplyScriptTestCase(unittest.TestCase):
             # requirements.txt creation on empty dir
             mock_yn.return_value = False
             exp_prompt_yn += [call('Copy?')]*len(exp_files) + [call('Create empty?')]
-            exp_printmsg += [
+            exp_print_msg += [
                 call(Fore.RED, f"Missing {ef.relative_to(td)}") for ef in exp_main ] + [
-                call(Fore.RED, f"Missing (optional) {ef.relative_to(td)}") for ef in exp_optnl ] + [
+                call(Fore.RED, f"Missing (optional) {ef.relative_to(td)}") for ef in exp_opt ] + [
                 call(Fore.RED, "Missing requirements.txt") ]
             sys.argv = ['apply.py', '--dry-run', '--interactive', str(td)]
             apply.main()
             mock_yn.return_value = True
             exp_prompt_yn += [call('Copy?')]*len(exp_files) + [call('Create empty?')]
-            exp_printmsg += list(chain.from_iterable(
+            exp_print_msg += list(chain.from_iterable(
                     [call(Fore.RED,    f"Missing {ef.relative_to(td)}"),
                      call(Fore.YELLOW, f"[DRY RUN] Copying {ef.relative_to(td)} to {ef}")] for ef in exp_main
                 )) + list(chain.from_iterable(
                     [call(Fore.RED,    f"Missing (optional) {ef.relative_to(td)}"),
-                     call(Fore.YELLOW, f"[DRY RUN] Copying {ef.relative_to(td)} to {ef}")] for ef in exp_optnl
+                     call(Fore.YELLOW, f"[DRY RUN] Copying {ef.relative_to(td)} to {ef}")] for ef in exp_opt
                 )) + [
                     call(Fore.RED, "Missing requirements.txt"), call(Fore.YELLOW, "[DRY RUN] Creating empty requirements.txt") ]
             sys.argv = ['apply.py', '--dry-run', '--interactive', str(td)]
@@ -206,24 +209,24 @@ class ApplyScriptTestCase(unittest.TestCase):
 
             self.assertFalse( list(td.iterdir()) )  # dir is still empty
             # apply to empty dir
-            exp_printmsg += [
+            exp_print_msg += [
                 call(Fore.YELLOW, f"Copying {ef.relative_to(td)} to {ef}") for ef in exp_files ] + [
                 call(Fore.YELLOW, "Creating empty requirements.txt") ]
             sys.argv = ['apply.py', str(td)]
             apply.main()
-            cmpthem()
+            cmp_them()
 
             # apply to existing dir
-            exp_printmsg += [
+            exp_print_msg += [
                 call(Fore.GREEN, f"Identical: {ef.relative_to(td)}") for ef in exp_main ] + [
-                call(Fore.GREEN, f"Identical (optional): {ef.relative_to(td)}") for ef in exp_optnl ]
+                call(Fore.GREEN, f"Identical (optional): {ef.relative_to(td)}") for ef in exp_opt ]
             apply.main()
-            cmpthem()
+            cmp_them()
 
             # interactive
-            exp_printmsg += [
+            exp_print_msg += [
                 call(Fore.GREEN, f"Identical: {ef.relative_to(td)}") for ef in exp_main ] + [
-                call(Fore.GREEN, f"Identical (optional): {ef.relative_to(td)}") for ef in exp_optnl ]
+                call(Fore.GREEN, f"Identical (optional): {ef.relative_to(td)}") for ef in exp_opt ]
             sys.argv = ['apply.py', '--interactive', str(td)]
             apply.main()
 
@@ -234,41 +237,41 @@ class ApplyScriptTestCase(unittest.TestCase):
             with exp_main[-1].open('ab') as fh:  # pyproject.toml
                 fh.write(b'\n# foo\n')
             # optional file doesn't exist
-            exp_optnl[-1].unlink()  # dev/local-actions.sh
+            exp_opt[-1].unlink()  # dev/local-actions.sh
             # normal
             exp_diff += [ call(sd/exp_main[-1].relative_to(td), exp_main[-1], ignore_ws=False, try_git=True ) ]
-            exp_printmsg += [
+            exp_print_msg += [
                 call(Fore.YELLOW,  f"[DRY RUN] Copying {exp_main[0].relative_to(td)} to {exp_main[0]}") ] + [
                 call(Fore.GREEN,   f"Identical: {ef.relative_to(td)}") for ef in exp_main[1:-1] ] + [
                 call(Fore.MAGENTA, f"Different: {exp_main[-1].relative_to(td)}") ] + [
-                call(Fore.GREEN,   f"Identical (optional): {ef.relative_to(td)}") for ef in exp_optnl[:-1] ] + [
-                call(Fore.CYAN,    f"Not copying optional {exp_optnl[-1].relative_to(td)}") ]
+                call(Fore.GREEN,   f"Identical (optional): {ef.relative_to(td)}") for ef in exp_opt[:-1] ] + [
+                call(Fore.CYAN,    f"Not copying optional {exp_opt[-1].relative_to(td)}") ]
             sys.argv = ['apply.py', '--dry-run', str(td)]
             apply.main()
-            # interactive runs (also test the passthru of do_diff args from cmdline)
+            # interactive runs (also test the pass-thru of do_diff args from cmdline)
             mock_yn.return_value = False
             exp_diff += [ call(sd/exp_main[-1].relative_to(td), exp_main[-1], ignore_ws=False, try_git=False) ]
             exp_prompt_yn += [call('Copy?'), call('Overwrite?'), call('Copy?')]
-            exp_printmsg += [
+            exp_print_msg += [
                 call(Fore.RED,     f"Missing {exp_main[0].relative_to(td)}") ] + [
                 call(Fore.GREEN,   f"Identical: {ef.relative_to(td)}") for ef in exp_main[1:-1] ] + [
                 call(Fore.MAGENTA, f"Different: {exp_main[-1].relative_to(td)}") ] + [
-                call(Fore.GREEN,   f"Identical (optional): {ef.relative_to(td)}") for ef in exp_optnl[:-1] ] + [
-                call(Fore.CYAN,    f"Optional {exp_optnl[-1].relative_to(td)}") ]
+                call(Fore.GREEN,   f"Identical (optional): {ef.relative_to(td)}") for ef in exp_opt[:-1] ] + [
+                call(Fore.CYAN,    f"Optional {exp_opt[-1].relative_to(td)}") ]
             sys.argv = ['apply.py', '--dry-run', '--interactive', '--no-git-diff', str(td)]
             apply.main()
             mock_yn.return_value = True
             exp_diff += [ call(sd/exp_main[-1].relative_to(td), exp_main[-1], ignore_ws=True,  try_git=True ) ]
             exp_prompt_yn += [call('Copy?'), call('Overwrite?'), call('Copy?')]
-            exp_printmsg += [
+            exp_print_msg += [
                 call(Fore.RED,     f"Missing {exp_main[0].relative_to(td)}") ] + [
                 call(Fore.YELLOW,  f"[DRY RUN] Copying {exp_main[0].relative_to(td)} to {exp_main[0]}")] + [
                 call(Fore.GREEN,   f"Identical: {ef.relative_to(td)}") for ef in exp_main[1:-1] ] + [
                 call(Fore.MAGENTA, f"Different: {exp_main[-1].relative_to(td)}") ] + [
                 call(Fore.YELLOW,  f"[DRY RUN] Copying {exp_main[-1].relative_to(td)} to {exp_main[-1]}") ] + [
-                call(Fore.GREEN,   f"Identical (optional): {ef.relative_to(td)}") for ef in exp_optnl[:-1] ] + [
-                call(Fore.CYAN,    f"Optional {exp_optnl[-1].relative_to(td)}") ] + [
-                call(Fore.YELLOW,  f"[DRY RUN] Copying {exp_optnl[-1].relative_to(td)} to {exp_optnl[-1]}") ]
+                call(Fore.GREEN,   f"Identical (optional): {ef.relative_to(td)}") for ef in exp_opt[:-1] ] + [
+                call(Fore.CYAN,    f"Optional {exp_opt[-1].relative_to(td)}") ] + [
+                call(Fore.YELLOW,  f"[DRY RUN] Copying {exp_opt[-1].relative_to(td)} to {exp_opt[-1]}") ]
             sys.argv = ['apply.py', '--dry-run', '--interactive', '--ignore-all-space', str(td)]
             apply.main()
 
@@ -296,4 +299,4 @@ class ApplyScriptTestCase(unittest.TestCase):
         self.assertEqual( mock_fix.call_args_list,      [call()]*12   )
         self.assertEqual( mock_diff.call_args_list,     exp_diff      )
         self.assertEqual( mock_yn.call_args_list,       exp_prompt_yn )
-        self.assertEqual( mock_printmsg.call_args_list, exp_printmsg  )
+        self.assertEqual( mock_print_msg.call_args_list, exp_print_msg  )
