@@ -11,7 +11,8 @@
   - Never use a general `type: ignore`, always add the specific rule (e.g. `type: ignore[arg-type]`).
 
 - Testing:
-  - As a final check before completing work, prefer the default Makefile target `make test`, which runs all checks, lint, and tests. During work, you may also use `make unittest` for tests only (much faster, no linting or coverage), or `make coverage` for tests with coverage (still fast, no linting).
-  - For `make` commands, you may need to point to the Python binary explicitly, as in `make test PYTHON3BIN=.venv3.11/bin/python`.
-  - If sandbox restrictions prevent running `make test`, request approval.
+  - Prefer the default Makefile target `make test`, which runs all checks, lint, and tests. During work, use `make unittest` for tests only (much faster, no linting or coverage), or `make coverage` for tests with coverage (still fast, no linting).
+  - For `make` commands, you may need to point to the Python binary explicitly, as in `make test PYTHON3BIN=.venv3.11/bin/python`. If there isn't a `.venv*` in the current project, check `~/.venvs/project-name/.venv*`, and if that exists, pick the Python with the lowest version.
   - The scripts in `dev` are intended for use when preparing releases; there is no need to run them during normal development.
+
+- On native Windows (not WSL), always prefer the Git Bash installed at `%LOCALAPPDATA%\Programs\Git` over a global installation.
