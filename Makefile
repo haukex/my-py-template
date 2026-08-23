@@ -19,7 +19,7 @@ test:   smoke-checks nix-checks shellcheck ver-checks coverage  ## Run all tests
 # Reminder: If the `test` target changes, make the appropriate changes to .github/workflows/tests.yml
 
 # spell-checker: ignore txts tasklist installdeps shellcheck FSTYPE MJSON OSTYPE devpod euxo pythonpath rcfile sdist
-# spell-checker: ignore igbpyutils ipynb msys mypy noheadings notruncate pipefail pycache pylint pyproject vfat
+# spell-checker: ignore igbpyutils ipynb msys mypy noheadings notruncate pipefail pycache pylint pyproject vfat pathlib
 
 SHELL = /bin/bash
 .ONESHELL:  # each recipe is executed as a single script
@@ -93,9 +93,15 @@ shellcheck:  ## Run shellcheck
 	find . \( -type d \( -name '.venv*' -o -name '.devpod-internal' \) -prune \) -o \( -iname '*.sh' -exec shellcheck '{}' + \)
 
 ver-checks:  ## Checks that depend on the Python version
-	@set -euxo pipefail
+	@set -euo pipefail
+	# To make sure pyright works in a sandbox as well, set a few configuration variables explicitly that it can't discover automatically
+	pyright_cfg=".tmp_pyright_config-$$$$.json"
+	trap 'set +ex; rm -f -- "$$pyright_cfg"' EXIT
+	$(PYTHON3BIN) -c "import json, pathlib, sys; prefix=pathlib.Path(sys.prefix).resolve(); json.dump({'extends':'./pyproject.toml', \
+		'venvPath':str(prefix.parent), 'venv':prefix.name, 'pythonVersion':'.'.join(map(str, sys.version_info[:2]))}, sys.stdout)" > "$$pyright_cfg"
+	set -x
 	# https://microsoft.github.io/pyright/#/command-line
-	npx pyright --project pyproject.toml --pythonpath "$$( $(PYTHON3BIN) -c 'import sys; print(sys.executable)' )" $(py_code_locs)
+	$(PYTHON3BIN) -m pyright --project "$$pyright_cfg" $(py_code_locs)
 	$(PYTHON3BIN) -m mypy --config-file pyproject.toml $(py_code_locs)
 	$(PYTHON3BIN) -m flake8 --toml-config=pyproject.toml $(py_code_locs)
 	$(PYTHON3BIN) -m pylint --rcfile=pyproject.toml --recursive=y $(py_code_locs)

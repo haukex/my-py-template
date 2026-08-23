@@ -22,9 +22,8 @@ Dependencies
 
 - To install all Python requirements, just do `make installdeps`.
 
-- To install `pyright`, install Node as per
+- For `pyright`, install Node as per
   <https://github.com/haukex/toolshed/blob/main/notes/TypeScript.md>
-  and then `npm install -g pyright`.
 
 - Mypy may require a few `types-*` packages, just do `mypy --install-types`
   (look for "Hint"s in its output).

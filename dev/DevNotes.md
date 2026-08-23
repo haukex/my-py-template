@@ -19,9 +19,8 @@ Development Environment
 - [ ] `python3.10 -m venv .venv3.10` and `. .venv3.10/bin/activate`
   - [ ] In some cases (DevPod), placing the venv at e.g. `~/.venvs/project-name/.venv3.10` is better
 - [ ] `make installdeps` - set up dev env
-- [ ] Installing Pyright (if you don't have Node already):
-  - [ ] Install Node as per <https://github.com/haukex/toolshed/blob/main/notes/JavaScript.md>
-  - [ ] `npm install -g pyright`
+- [ ] For Pyright, if you don't have Node already,
+  install Node as per <https://github.com/haukex/toolshed/blob/main/notes/JavaScript.md>
 
 Testing
 -------
