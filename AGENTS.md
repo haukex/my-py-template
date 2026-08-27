@@ -10,6 +10,9 @@
   - *Do not* disable type checker / linter directives for an entire file.
   - Never use a general `type: ignore`, always add the specific rule (e.g. `type: ignore[arg-type]`).
 
+- Prefer inlining variables (including constants) that are only used once, and prefer inlining functions that consist of only one statement or that are called in only one place.
+- Instead of dataclasses or named tuples that only have two or three members and that are only used in one place, prefer tuples with clear types (implicit types are fine).
+
 - Testing:
   - Prefer the default Makefile target `make test`, which runs all checks, lint, and tests. During work, use `make unittest` for tests only (much faster, no linting or coverage), or `make coverage` for tests with coverage (still fast, no linting).
   - For `make` commands, you may need to point to the Python binary explicitly, as in `make test PYTHON3BIN=.venv3.11/bin/python`. If there isn't a `.venv*` in the current project, check `~/.venvs/project-name/.venv*`, and if that exists, pick the Python with the lowest version.
