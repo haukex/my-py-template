@@ -68,7 +68,7 @@ FILES: tuple[FileEntry, ...] = (
     FileEntry(Path('AGENTS.md'), None, optional=True),
 )
 
-def do_diff(fromfile :Filename, to_file :Filename, *, ignore_ws :bool=False, try_git :bool=True):
+def do_diff(fromfile :Filename, to_file :Filename, *, ignore_ws :bool=False, try_git :bool=True) -> None:
     if try_git:
         cmd = ['git','--no-pager','diff','--no-index','--color-words'] \
                + ( ['--ignore-all-space'] if ignore_ws else [] ) \
@@ -112,17 +112,17 @@ def do_diff(fromfile :Filename, to_file :Filename, *, ignore_ws :bool=False, try
 def prompt_yn(msg :str) -> bool:
     return input(f"{Fore.WHITE}{Back.RED}==>{Style.RESET_ALL} {msg} [yN] ").lower().startswith('y')
 
-def print_msg(color :str, msg :str):
+def print_msg(color :str, msg :str) -> None:
     # Note the flush is apparently needed if piping to `less -R`
     print(f"{Style.BRIGHT}{color}##### {msg} #####{Style.RESET_ALL}", flush=True)
 
-def do_copy(fact :FileActionItem, *, dry_run :bool):
+def do_copy(fact :FileActionItem, *, dry_run :bool) -> None:
     print_msg(Fore.YELLOW, f"{'[DRY RUN] ' if dry_run else ''}Copying {fact.name} to {fact.dest}")
     if not dry_run:
         fact.dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(fact.source, fact.dest)
 
-def main():
+def main() -> None:
     init_handlers()
     just_fix_windows_console()
     parser = argparse.ArgumentParser(description='Python Template Applicator')

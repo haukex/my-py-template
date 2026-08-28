@@ -28,16 +28,16 @@ Testing
 - [ ] `make` - tests incl. lint & coverage
   - [ ] `make coverage` - no linting
   - [ ] `make unittest` - no linting or coverage
-- [ ] `dev/local-actions.sh .` - tests on all Python versions
 - [ ] `make outdated` - check for newer dependency versions
+- [ ] `dev/local-actions.sh <venvs-path>` - tests on all Python versions
 
 Release Preparation
 -------------------
 
 - [ ] Check:
-  - [ ] `make tasklist`
+  - [ ] `make tasklist` (checks GitHub if possible)
   - [ ] GitHub Issues
-  - [ ] Git stash
+  - [ ] `git stash list`
   - [ ] Whether the Python versions in `dev/local-actions.sh` and the GitHub Actions need updating
 - [ ] Spellcheck all documentation
 - [ ] Generate documentation (dependent on the project) and check its formatting
@@ -58,7 +58,7 @@ Releasing
   link to PyPI (specific version); attach `.tar.gz` to release
 - [ ] `pip install --upgrade project-name` and run any command-line tools
   (test installation of package and command-line scripts)
-- [ ] `git clean -dxf dist *.egg-info`
+- [ ] `git clean -dxf dist *.egg-info` or `make clean` (more thorough)
 - [ ] Add placeholder for next version to Changelog
 
 <!-- spell-checker: ignore backcompat installdeps pyproject tasklist tzvf venvs -->

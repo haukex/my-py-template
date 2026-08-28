@@ -20,28 +20,22 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see https://www.gnu.org/licenses/
 """
-import unittest
 import re
 import shutil
+import unittest
 import subprocess
 from pathlib import Path
-from itertools import tee, chain
 from typing import Optional
+from itertools import chain, pairwise
 from tempfile import TemporaryDirectory
 
 # spell: ignore shellcheck requirement_txts oneshell
 
-def pairwise(iterable):
-    """:func:`itertools.pairwise` was added in 3.10, this is a shim"""
-    a, b = tee(iterable)
-    next(b, None)
-    return zip(a, b)
-
-def dollar_replace(inp :str, trans :dict[str, str]):
+def dollar_replace(inp :str, trans :dict[str, str]) -> str:
     """Replace ``$$`` and ``$(...)`` sequences as they would appear in Makefile recipes"""
     replacements :list[tuple[int, int, str]] = []
     was_dollar = False
-    stack :list[tuple] = []
+    stack :list[tuple[int, ...]] = []
     for i, c in enumerate(inp):
         if was_dollar:
             if c=='$':
@@ -73,7 +67,7 @@ def dollar_replace(inp :str, trans :dict[str, str]):
 
 class MakefileTestCase(unittest.TestCase):
 
-    def test_dollar_replace(self):
+    def test_dollar_replace(self) -> None:
         self.assertEqual(
             dollar_replace( '(x) $(y) $$( $(z) ) $(y)$(y) $$$$', { 'y':'A', 'z':'B' } ),
             '(x) A $( B ) AA $$' )
@@ -95,7 +89,7 @@ class MakefileTestCase(unittest.TestCase):
     # GitHub Action Runners don't have shellcheck on Windows or macOS, which is why we have to say "no cover" for those (for now).
     #TODO Later: Require shellcheck tests on the local machine.
     @unittest.skipIf(condition=shutil.which('shellcheck') is None, reason='only when shellcheck is installed')
-    def test_makefile_shellcheck(self):  # pragma: no cover
+    def test_makefile_shellcheck(self) -> None:  # pragma: no cover
         """Run ``shellcheck`` on the individual Makefile recipes"""
         makefile = Path(__file__).parent.parent/'Makefile'
         with ( makefile.open(encoding='UTF-8') as ifh,
@@ -105,7 +99,7 @@ class MakefileTestCase(unittest.TestCase):
             recipe :list[str] = []
             files :list[Path] = []
             # process a recipe
-            def recipe_done():
+            def recipe_done() -> None:
                 if not recipe:
                     return
                 assert cur_target

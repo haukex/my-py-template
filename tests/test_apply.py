@@ -36,7 +36,7 @@ import apply
 
 # spell: ignore igbpyutils
 
-def fake_msg(color :str, msg :str):
+def fake_msg(color :str, msg :str) -> str:
     return f"{Style.BRIGHT}{color}##### {msg} #####{Style.RESET_ALL}\n"
 
 class ApplyScriptTestCase(unittest.TestCase):
@@ -44,13 +44,13 @@ class ApplyScriptTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.maxDiff = None  # pylint: disable=invalid-name
 
-    def test_do_diff(self):
+    def test_do_diff(self) -> None:
         with NamedTempFileDeleteLater() as tf1, NamedTempFileDeleteLater() as tf2:
             tf1.write(b'Hello\nx')
             tf1.close()
             tf2.write(b'Hello\nx')
             tf2.close()
-            sp_rv :subprocess.CompletedProcess
+            sp_rv :subprocess.CompletedProcess[bytes]
 
             # git diff
             sp_rv = subprocess.CompletedProcess(
@@ -122,17 +122,17 @@ class ApplyScriptTestCase(unittest.TestCase):
                 f" Nothing\n"
                 f" much.\n" )
 
-    def test_print_msg(self):
+    def test_print_msg(self) -> None:
         with redirect_stdout(io.StringIO()) as out:
             apply.print_msg(Fore.RED, 'Foo')
         self.assertEqual( out.getvalue(), fake_msg(Fore.RED, 'Foo') )
 
-    def test_prompt_yn(self):
+    def test_prompt_yn(self) -> None:
         with patch('builtins.input', return_value='Y') as mock_input:
             self.assertTrue( apply.prompt_yn('Foo?') )
         mock_input.assert_called_once_with(f"{Fore.WHITE}{Back.RED}==>{Style.RESET_ALL} Foo? [yN] ")
 
-    def test_apply(self):  # pylint: disable=too-many-statements,too-many-locals
+    def test_apply(self) -> None:  # pylint: disable=too-many-statements,too-many-locals
         sd = Path(__file__).parent.parent
         with (TemporaryDirectory() as t_dir,
               patch('apply.init_handlers') as mock_ih,
@@ -166,7 +166,7 @@ class ApplyScriptTestCase(unittest.TestCase):
                 td/'requirements.txt',
             )
 
-            def cmp_them():
+            def cmp_them() -> None:
                 self.assertEqual( sorted( p for p in td.rglob('*') if not p.is_dir() ), sorted(exp_files+exp_special) )
                 for p in exp_files:
                     src = sd/p.relative_to(td)
