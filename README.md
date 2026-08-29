@@ -49,6 +49,15 @@ Dependencies
   <https://jqlang.github.io/jq/> and installed like `shellcheck` above
 
 
+Thoughts / To-Do's
+------------------
+
+- Several of my projects use `colorama`, I could consider replacing that with e.g. `termcolor`.
+- I could provide an example package in this project (including a `py.typed` marker);
+  and I could update the layout to be more in line with PyPA recommendations, such as
+  a `src` directory to more easily prevent tests from being packaged in distros.
+
+
 Author, Copyright, and License
 ------------------------------
 
