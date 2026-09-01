@@ -13,9 +13,7 @@ Some additional stuff elsewhere:
   [simple-perms](https://github.com/haukex/simple-perms) and
   [unzipwalk](https://github.com/haukex/unzipwalk)'s `Makefile`s and `docs` folders
 - Sphinx documentation generation to GitHub Pages:
-  [pytoa5](https://github.com/haukex/pytoa5)
-- *Read the Docs* and Sphinx documentation generation:
-  [igbpyutils](https://github.com/haukex/igbpyutils/)
+  [pytoa5](https://github.com/haukex/pytoa5) and [igbpyutils](https://github.com/haukex/igbpyutils/)
 
 Dependencies
 ------------
