@@ -19,6 +19,7 @@ Dependencies
 ------------
 
 - To install all Python requirements, just do `make installdeps`.
+  Run `make outdated` to check *installed* packages for newer versions.
 
 - For `pyright`, install Node as per
   <https://github.com/haukex/toolshed/blob/main/notes/TypeScript.md>
@@ -53,8 +54,10 @@ Thoughts / To-Do's
 - Several of my projects use `colorama`, I could consider replacing that with e.g. `termcolor`.
 - I could provide an example package in this project (including a `py.typed` marker);
   and I could update the layout to be more in line with PyPA recommendations, such as
-  a `src` directory to more easily prevent tests from being packaged in distros.
+  a `src` directory to more easily prevent tests from being packaged in distributions.
 
+
+<!-- spell: ignore Mypy colorama installdeps pyproject pytoa shellcheck termcolor unzipwalk -->
 
 Author, Copyright, and License
 ------------------------------

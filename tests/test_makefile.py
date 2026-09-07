@@ -29,7 +29,7 @@ from typing import Optional
 from itertools import chain, pairwise
 from tempfile import TemporaryDirectory
 
-# spell: ignore shellcheck requirement_txts oneshell
+# spell: ignore shellcheck oneshell
 
 def dollar_replace(inp :str, trans :dict[str, str]) -> str:
     """Replace ``$$`` and ``$(...)`` sequences as they would appear in Makefile recipes"""
@@ -109,10 +109,8 @@ class MakefileTestCase(unittest.TestCase):
                 recipe.clear()
                 rec = dollar_replace(rec, {
                     'PYTHON3BIN': 'python',
-                    'foreach x,$(requirement_txts),-r $(x)':'-r requirements.txt -r dev/requirements.txt',
                     'perm_checks': './apply.py ./tests .gitignore .vscode .github',
                     'py_code_locs': './apply.py tests',
-                    'requirement_txts': 'requirements.txt dev/requirements.txt',
                     'MAKEFILE_LIST': makefile.as_posix(),
                 })
                 # write to output file

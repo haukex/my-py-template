@@ -54,7 +54,6 @@ class FileActionItem(NamedTuple):
 FILES: tuple[FileEntry, ...] = (
     FileEntry(Path('.vscode','extensions.json'), None),
     FileEntry(Path('.vscode','settings.json'), None),
-    FileEntry(Path('dev','requirements.txt'), ('requirements-dev.txt',)),
     FileEntry(Path('.gitignore'), None),
     FileEntry(Path('Makefile'), None),
     FileEntry(Path('pyproject.toml'), None),
@@ -184,21 +183,6 @@ def main() -> None:
                     do_copy(fact, dry_run=args.dry_run)
             else:
                 do_copy(fact, dry_run=args.dry_run)
-
-    # when initializing an empty directory, create an empty requirements.txt
-    req_txt = dst_path/'requirements.txt'
-    if dst_was_empty and not req_txt.exists():
-        do_it = False
-        if args.interactive:
-            print_msg(Fore.RED, f"Missing {req_txt.name}")
-            if prompt_yn("Create empty?"):
-                do_it = True
-        else:
-            do_it = True
-        if do_it:
-            print_msg(Fore.YELLOW, f"{'[DRY RUN] ' if args.dry_run else ''}Creating empty {req_txt.name}")
-            if not args.dry_run:
-                req_txt.touch()
 
     parser.exit(0)
 

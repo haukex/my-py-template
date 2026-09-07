@@ -140,13 +140,14 @@ class ApplyScriptTestCase(unittest.TestCase):
               patch('apply.do_diff') as mock_diff,
               patch('apply.prompt_yn', return_value=True) as mock_yn,
               patch('apply.just_fix_windows_console') as mock_fix,
+              # Test alternative filename support independently of the template's current file list:
+              patch('apply.FILES', tuple(ent._replace(alt_names=('makefile',)) if ent.path == Path('Makefile') else ent for ent in apply.FILES)),
               patch('argparse.ArgumentParser.exit') as mock_exit ):
             td = Path(t_dir).resolve(strict=True)
 
             exp_main = (
                 td/'.vscode'/'extensions.json',
                 td/'.vscode'/'settings.json',
-                td/'dev'/'requirements.txt',
                 td/'.gitignore',
                 td/'Makefile',
                 td/'pyproject.toml',
@@ -162,56 +163,45 @@ class ApplyScriptTestCase(unittest.TestCase):
                 td/'AGENTS.md',
             )
             exp_files = exp_main+exp_opt
-            exp_special = (
-                td/'requirements.txt',
-            )
 
             def cmp_them() -> None:
-                self.assertEqual( sorted( p for p in td.rglob('*') if not p.is_dir() ), sorted(exp_files+exp_special) )
+                self.assertEqual( sorted( p for p in td.rglob('*') if not p.is_dir() ), sorted(exp_files) )
                 for p in exp_files:
                     src = sd/p.relative_to(td)
                     self.assertTrue( filecmp.cmp( src, p, shallow=False ), f"files identical: {src} and {p}" )
-                for p in exp_special:
-                    self.assertEqual( p.lstat().st_size, 0 )
 
             exp_prompt_yn :list[_Call] = []
             exp_print_msg :list[_Call] = []
             exp_diff :list[_Call] = []
 
             # try a dry-run on empty dir
-            exp_print_msg += [
-                call(Fore.YELLOW, f"[DRY RUN] Copying {ef.relative_to(td)} to {ef}") for ef in exp_files ] + [
-                call(Fore.YELLOW, "[DRY RUN] Creating empty requirements.txt") ]
+            exp_print_msg += [ call(Fore.YELLOW, f"[DRY RUN] Copying {ef.relative_to(td)} to {ef}") for ef in exp_files ]
             sys.argv = ['apply.py', '--dry-run', str(td)]
             apply.main()
 
-            # requirements.txt creation on empty dir
+            # interactive on empty dir
             mock_yn.return_value = False
-            exp_prompt_yn += [call('Copy?')]*len(exp_files) + [call('Create empty?')]
+            exp_prompt_yn += [call('Copy?')]*len(exp_files)
             exp_print_msg += [
                 call(Fore.RED, f"Missing {ef.relative_to(td)}") for ef in exp_main ] + [
-                call(Fore.RED, f"Missing (optional) {ef.relative_to(td)}") for ef in exp_opt ] + [
-                call(Fore.RED, "Missing requirements.txt") ]
+                call(Fore.RED, f"Missing (optional) {ef.relative_to(td)}") for ef in exp_opt ]
             sys.argv = ['apply.py', '--dry-run', '--interactive', str(td)]
             apply.main()
             mock_yn.return_value = True
-            exp_prompt_yn += [call('Copy?')]*len(exp_files) + [call('Create empty?')]
+            exp_prompt_yn += [call('Copy?')]*len(exp_files)
             exp_print_msg += list(chain.from_iterable(
                     [call(Fore.RED,    f"Missing {ef.relative_to(td)}"),
                      call(Fore.YELLOW, f"[DRY RUN] Copying {ef.relative_to(td)} to {ef}")] for ef in exp_main
                 )) + list(chain.from_iterable(
                     [call(Fore.RED,    f"Missing (optional) {ef.relative_to(td)}"),
                      call(Fore.YELLOW, f"[DRY RUN] Copying {ef.relative_to(td)} to {ef}")] for ef in exp_opt
-                )) + [
-                    call(Fore.RED, "Missing requirements.txt"), call(Fore.YELLOW, "[DRY RUN] Creating empty requirements.txt") ]
+                ))
             sys.argv = ['apply.py', '--dry-run', '--interactive', str(td)]
             apply.main()
 
             self.assertFalse( list(td.iterdir()) )  # dir is still empty
             # apply to empty dir
-            exp_print_msg += [
-                call(Fore.YELLOW, f"Copying {ef.relative_to(td)} to {ef}") for ef in exp_files ] + [
-                call(Fore.YELLOW, "Creating empty requirements.txt") ]
+            exp_print_msg += [ call(Fore.YELLOW, f"Copying {ef.relative_to(td)} to {ef}") for ef in exp_files ]
             sys.argv = ['apply.py', str(td)]
             apply.main()
             cmp_them()
@@ -280,14 +270,14 @@ class ApplyScriptTestCase(unittest.TestCase):
             with self.assertRaises(NotADirectoryError):
                 apply.main()
             # error case: more than one alternative
-            (td/'dev'/'requirements.txt').unlink()
-            (td/'requirements-dev.txt').touch()
-            (td/'dev'/'requirements-dev.txt').touch()
+            (td/'Makefile').unlink()
+            (td/'makefile').touch()
+            (td/'dev'/'makefile').touch()
             sys.argv = ['apply.py', str(td)]
             with self.assertRaises(RuntimeError):
                 apply.main()
-            (td/'requirements-dev.txt').unlink()
-            (td/'dev'/'requirements-dev.txt').unlink()
+            (td/'makefile').unlink()
+            # Leave one alternative to exercise successful filename resolution on the next run.
             # error case: file is a directory
             (td/'pyproject.toml').unlink()
             (td/'pyproject.toml').mkdir()
