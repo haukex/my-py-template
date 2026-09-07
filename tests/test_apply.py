@@ -140,8 +140,9 @@ class ApplyScriptTestCase(unittest.TestCase):
               patch('apply.do_diff') as mock_diff,
               patch('apply.prompt_yn', return_value=True) as mock_yn,
               patch('apply.just_fix_windows_console') as mock_fix,
-              # Test alternative filename support independently of the template's current file list:
-              patch('apply.FILES', tuple(ent._replace(alt_names=('makefile',)) if ent.path == Path('Makefile') else ent for ent in apply.FILES)),
+              # Test alternative filename support independently of the template's file list, which currently doesn't have any alt_names:
+              patch('apply.FILES',
+                    tuple(ent._replace(alt_names=('Makefile.alt',)) if ent.path == Path('Makefile') else ent for ent in apply.FILES)),
               patch('argparse.ArgumentParser.exit') as mock_exit ):
             td = Path(t_dir).resolve(strict=True)
 
@@ -269,15 +270,14 @@ class ApplyScriptTestCase(unittest.TestCase):
             sys.argv = ['apply.py', str(td/'pyproject.toml')]
             with self.assertRaises(NotADirectoryError):
                 apply.main()
-            # error case: more than one alternative
+            # error case: more than one alternative (when original doesn't exist)
             (td/'Makefile').unlink()
-            (td/'makefile').touch()
-            (td/'dev'/'makefile').touch()
+            (td/'Makefile.alt').touch()
+            (td/'dev'/'Makefile').touch()
             sys.argv = ['apply.py', str(td)]
             with self.assertRaises(RuntimeError):
                 apply.main()
-            (td/'makefile').unlink()
-            # Leave one alternative to exercise successful filename resolution on the next run.
+            (td/'dev'/'Makefile').unlink()
             # error case: file is a directory
             (td/'pyproject.toml').unlink()
             (td/'pyproject.toml').mkdir()
